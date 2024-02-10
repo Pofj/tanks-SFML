@@ -14,8 +14,10 @@ namespace game.GameObject
     {
         //public delegate void ObjectHandler(GameObjectType Type);
         //public event ObjectHandler? Kollision;
-        public delegate bool ObjectHandler(GameObjectType Type);
-        public event ObjectHandler Kollision;
+        public delegate bool KollisionHandler(GameObjectType Type);
+        public event KollisionHandler Kollision; //события коллизии
+        public delegate void ObjectHandler();
+        public event ObjectHandler Dead;
         protected bool alive = true;
         protected SFML.System.Vector2f Position;
         protected SFML.Graphics.Texture ObjectTexture;
@@ -35,8 +37,12 @@ namespace game.GameObject
             this.ObjectSprite.Origin = new Vector2f(ObjectSprite.GetLocalBounds().Width / 2, ObjectSprite.GetLocalBounds().Height / 2);
             ObjectSprite.Position = this.Position;
             ObjectSprite.Scale = new SFML.System.Vector2f(SizeObject, SizeObject);
-
             Kollision += CheckKollision;
+        }
+        protected void Kill()
+        {
+            this.alive = false;
+            if (Dead != null) Dead.Invoke();
         }
         public virtual bool OnKollision(GameObjectType Typе)
         {

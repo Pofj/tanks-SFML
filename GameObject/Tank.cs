@@ -14,6 +14,7 @@ namespace game.GameObject
 {
     class Tank : Box
     {
+        private Game GamePt;
         private float TimeSinceLastShot = 0.11f;
         private uint Speed = 4;
         private double Angle;
@@ -25,8 +26,9 @@ namespace game.GameObject
         private Texture CannonTexture;
         private double CursorPositionX, CursorPositionY;
         private double a=1, b=1;
-        public Tank(float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.Player, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\ally_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\tank_cannon.png") : base(x, y, ObjectType, imagePath)
+        public Tank(in Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.Player, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\ally_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\tank_cannon.png") : base(x, y, ObjectType, imagePath)
         {
+            this.GamePt = GamePt;
             this.Angle = angle;
             AngleCannon = angle;
             CannonTexture = new SFML.Graphics.Texture(ImagePathCannon);
@@ -74,7 +76,7 @@ namespace game.GameObject
             TimeSinceLastShot = GlobalTimer.ClockGL.ElapsedTime.AsSeconds();
             Bullet temp_bullet = new Bullet(Position.X + 50 * (float)Math.Sin(AngleCannon * SpaceConstant.MathConst.M_PI / 180.0),
                 Position.Y - 50 * (float)Math.Cos(AngleCannon *  SpaceConstant.MathConst.M_PI / 180.0),AngleCannon, GameObjectType.PlayerBullet);
-            
+            temp_bullet.Dead += GamePt.DeleteDeadObject;
             AllObjects.Add(temp_bullet);
         }
         public void Move(in List<game.GameObject.Box> AllObjects)

@@ -107,11 +107,20 @@ namespace game.GameElements
         {
             GameIsOn = false;
         }
+        public void DeleteDeadObject()
+        {
+            for (int i =0; i<AllObjects.Count;i++)
+            {
+                if (!(AllObjects[i].isAlive())) AllObjects.RemoveAt(i);
+            }
+        }
         public void LoadLevel()
         {
+            
             Box temp = new Box(800, 400);
-            Tank temp2 = new Tank(400, 300, 0);
+            Tank temp2 = new Tank(this,400, 300, 0);
             MouseMove += temp2.UpdateCursorPos;
+            temp2.Dead += DeleteDeadObject;
             AllObjects.Add(temp);
             AllObjects.Add(temp2);
         }

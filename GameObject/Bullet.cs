@@ -22,7 +22,7 @@ namespace game.GameObject
         }
         protected override bool CheckKollision(GameObjectType Type)
         {
-            alive = false;
+            Kill();
             return true;
         }
         private void Move(in List<Box> AllObjects)

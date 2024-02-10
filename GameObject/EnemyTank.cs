@@ -9,6 +9,6 @@ namespace game.GameObject
 {
     class EnemyTank : Tank
     {
-        public EnemyTank(float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.EnemyTank, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank_cannon.png") : base(x, y, angle, ObjectType, imagePath, ImagePathCannon) { }
+        public EnemyTank(Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.EnemyTank, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank_cannon.png") : base(GamePt,x, y, angle, ObjectType, imagePath, ImagePathCannon) { }
     }
 }

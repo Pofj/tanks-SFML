@@ -19,7 +19,7 @@ namespace MainProgram
         static void Main(string[] args)
         {
             GameWindow window = new GameWindow(1200,800);
-            window.OpenWindow();
+            window.OpenWindow();   
         }
     }
 }
