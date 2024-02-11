@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using game.GameElements;
-using game.SpaceConstant;
+using game.Global;
 using SFML.Graphics;
 using SFML.System;
 
@@ -27,10 +27,10 @@ namespace game.GameObject
         }
         private void Move(in List<Box> AllObjects)
         {
-            float x_1 = (float)(Position.X + Math.Sin(Angle * SpaceConstant.MathConst.M_PI / 180.0) * 10);
-            float y_1 = (float)(Position.Y - Math.Cos(Angle * SpaceConstant.MathConst.M_PI / 180.0) * 10);
-            float x_2 = (float)(Position.X + Math.Cos((45 - Angle) * SpaceConstant.MathConst.M_PI / 180.0) * 23 / Math.Sqrt(2));
-            float y_2 = (float)(Position.Y - Math.Sin((45 - Angle) * SpaceConstant.MathConst.M_PI / 180.0) * 23 / Math.Sqrt(2));
+            float x_1 = (float)(Position.X + Math.Sin(Angle * MathConst.M_PI / 180.0) * 10);
+            float y_1 = (float)(Position.Y - Math.Cos(Angle * MathConst.M_PI / 180.0) * 10);
+            float x_2 = (float)(Position.X + Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * 23 / Math.Sqrt(2));
+            float y_2 = (float)(Position.Y - Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * 23 / Math.Sqrt(2));
 
             float x_3 = 2 * x_1 - x_2;
             float y_3 = 2 * y_1 - y_2;

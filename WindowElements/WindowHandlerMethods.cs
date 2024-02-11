@@ -15,5 +15,9 @@ namespace game.WindowElements
             RenderWindow window = (RenderWindow)sender;
             window.Close();
         }
+        public void OnResize(object sender, EventArgs e)
+        {
+
+        }
     }
 }

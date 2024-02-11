@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,7 @@ namespace game.GameElements
 {
     class Game
     {
-        public delegate void GameHandler(SFML.Window.MouseMoveEventArgs e);
-        public event GameHandler? MouseMove;
+
         private float SizeBackground = 1.1f;
         private bool GameIsOn = true;
         private int AliveBotCount;
@@ -83,17 +83,22 @@ namespace game.GameElements
         }
         public void MouseMoved(object sender, SFML.Window.MouseMoveEventArgs e)
         {
-            MouseMove.Invoke(e);
+            float k = KeyIsPress.OldWidth / KeyIsPress.CurrentWidth;
+            k = KeyIsPress.OldHeight / KeyIsPress.CurrentHeigh;
+            KeyIsPress.CursorPositionX = e.X * ((float)KeyIsPress.OldWidth / KeyIsPress.CurrentWidth); KeyIsPress.CursorPositionY = e.Y *((float)KeyIsPress.OldHeight/KeyIsPress.CurrentHeigh);
+            
         }
         private void CheckCorrectCreation()
         {
             if (BackgroundTexture == null) Console.WriteLine("Error to load texture on game class}");
             if (BackgroundSprite == null) Console.WriteLine("Error to create sprite or on class game class");
         }
-        public void ChangeSize(float NewSize)
+        public void ChangeResizeKoef(float k, float k2)
         {
-            BackgroundSprite.Scale = new SFML.System.Vector2f(NewSize, NewSize);
-            SizeBackground = NewSize;
+            for(int i = 0; i < AllObjects.Count; i++)
+            {
+                AllObjects[i].SetResizeKoef(k,k2);
+            }
         }
         public bool GetGameStatus()
         {
@@ -118,11 +123,18 @@ namespace game.GameElements
         {
             
             Box temp = new Box(800, 400);
-            Tank temp2 = new Tank(this,400, 300, 0);
-            MouseMove += temp2.UpdateCursorPos;
+            Tank temp2 = new Tank(this,100, 200, 0);
+            BreakingBox temp3 = new BreakingBox(300, 300);
+            Cannon temp4 = new Cannon(this, 400, 400);
+            HealBox temp5 = new HealBox(100, 100);
             temp2.Dead += DeleteDeadObject;
-            AllObjects.Add(temp);
+            temp3.Dead += DeleteDeadObject;
+            temp4.Dead += DeleteDeadObject;
             AllObjects.Add(temp2);
+            AllObjects.Add(temp3);
+            AllObjects.Add(temp);
+            AllObjects.Add(temp4);
+            AllObjects.Add(temp5);
         }
         private void Update(in RenderWindow window)
         {

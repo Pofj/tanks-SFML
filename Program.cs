@@ -1,6 +1,6 @@
 ﻿using game.WindowElements;
 using game.GameElements;
-using game.SpaceConstant;
+using game.Global;
 using game.GameObject;
 using SFML.Graphics;
 using SFML.System;
@@ -18,7 +18,7 @@ namespace MainProgram
     {
         static void Main(string[] args)
         {
-            GameWindow window = new GameWindow(1200,800);
+            GameWindow window = new GameWindow(800,600);
             window.OpenWindow();   
         }
     }

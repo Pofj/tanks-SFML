@@ -1,5 +1,5 @@
 ﻿using game.GameElements;
-using game.SpaceConstant;
+using game.Global;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -14,17 +14,16 @@ namespace game.GameObject
 {
     class Tank : Box
     {
-        private Game GamePt;
-        private float TimeSinceLastShot = 0.11f;
+        protected Game GamePt;
+        protected float TimeSinceLastShot = 0.11f;
         private uint Speed = 4;
-        private double Angle;
+        protected double Angle;
         private double AngleCannon;
-        private uint HP = 10;
+        protected uint HP = 10;
         private float SizeCannon = 0.14f;
         private float SizeTank = 0.11f;
-        private Sprite CannonSprite;
+        protected Sprite CannonSprite;
         private Texture CannonTexture;
-        private double CursorPositionX, CursorPositionY;
         private double a=1, b=1;
         public Tank(in Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.Player, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\ally_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\tank_cannon.png") : base(x, y, ObjectType, imagePath)
         {
@@ -53,12 +52,6 @@ namespace game.GameObject
                 window.Draw(CannonSprite);
             }
         }
-
-        public void UpdateCursorPos(SFML.Window.MouseMoveEventArgs e) //обработка события движения курсора
-        {
-            
-            CursorPositionX = e.X; CursorPositionY = e.Y;
-        }
         public override void Action(in List<game.GameObject.Box> AllObjects)
         {
             Move(AllObjects);
@@ -74,8 +67,8 @@ namespace game.GameObject
         {
             if ((GlobalTimer.ClockGL.ElapsedTime.AsSeconds() - TimeSinceLastShot) < 0.5) return;
             TimeSinceLastShot = GlobalTimer.ClockGL.ElapsedTime.AsSeconds();
-            Bullet temp_bullet = new Bullet(Position.X + 50 * (float)Math.Sin(AngleCannon * SpaceConstant.MathConst.M_PI / 180.0),
-                Position.Y - 50 * (float)Math.Cos(AngleCannon *  SpaceConstant.MathConst.M_PI / 180.0),AngleCannon, GameObjectType.PlayerBullet);
+            Bullet temp_bullet = new Bullet(Position.X + 50 * (float)Math.Sin(AngleCannon * MathConst.M_PI / 180.0),
+                Position.Y - 50 * (float)Math.Cos(AngleCannon *  MathConst.M_PI / 180.0),AngleCannon, GameObjectType.PlayerBullet);
             temp_bullet.Dead += GamePt.DeleteDeadObject;
             AllObjects.Add(temp_bullet);
         }
@@ -97,10 +90,10 @@ namespace game.GameObject
                 if (KeyIsPress.isWPressed)
                 {
 
-                    float x_1 = (float)(Position.X + Math.Sin(Angle * SpaceConstant.MathConst.M_PI / 180.0) * 33);
-                    float y_1 = (float)(Position.Y - Math.Cos(Angle * SpaceConstant.MathConst.M_PI / 180.0) * 33);
-                    float x_2 = (float)(Position.X + Math.Cos((45 - Angle) * SpaceConstant.MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
-                    float y_2 = (float)(Position.Y - Math.Sin((45 - Angle) * SpaceConstant.MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
+                    float x_1 = (float)(Position.X + Math.Sin(Angle * MathConst.M_PI / 180.0) * 33);
+                    float y_1 = (float)(Position.Y - Math.Cos(Angle * MathConst.M_PI / 180.0) * 33);
+                    float x_2 = (float)(Position.X + Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
+                    float y_2 = (float)(Position.Y - Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
 
                     float x_3 = 2 * x_1 - x_2;
                     float y_3 = 2 * y_1 - y_2;
@@ -150,10 +143,10 @@ namespace game.GameObject
                 }
                 if (KeyIsPress.isSPressed)
                 {
-                    float x_1 = (float)(Position.X - Math.Sin(Angle * SpaceConstant.MathConst.M_PI / 180.0) * 33);
-                    float y_1 = (float)(Position.Y + Math.Cos(Angle * SpaceConstant.MathConst.M_PI / 180.0) * 33);
-                    float x_2 = (float)(Position.X - Math.Cos((45 - Angle) * SpaceConstant.MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
-                    float y_2 = (float)(Position.Y + Math.Sin((45 - Angle) * SpaceConstant.MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
+                    float x_1 = (float)(Position.X - Math.Sin(Angle * MathConst.M_PI / 180.0) * 33);
+                    float y_1 = (float)(Position.Y + Math.Cos(Angle * MathConst.M_PI / 180.0) * 33);
+                    float x_2 = (float)(Position.X - Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
+                    float y_2 = (float)(Position.Y + Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
 
                     float x_3 = 2 * x_1 - x_2;
                     float y_3 = 2 * y_1 - y_2;
@@ -219,13 +212,13 @@ namespace game.GameObject
         }
         private void CannonRotation()
         {
-            a = Math.Sqrt(Math.Pow((CursorPositionX - Position.X), 2) + Math.Pow((CursorPositionY - Position.Y), 2));
-            b = Math.Abs(CursorPositionY - Position.Y);
+            a = Math.Sqrt(Math.Pow((KeyIsPress.CursorPositionX - Position.X), 2) + Math.Pow((KeyIsPress.CursorPositionY - Position.Y), 2)); if (a == 0) a = 0.0001;
+            b = Math.Abs(KeyIsPress.CursorPositionY - Position.Y);
 
-            if (CursorPositionY > Position.Y)
+            if (KeyIsPress.CursorPositionY > Position.Y)
             {
                 AngleCannon = 180 - Math.Acos(b / a) * (180 / MathConst.M_PI);
-                if (CursorPositionX < Position.X)
+                if (KeyIsPress.CursorPositionX < Position.X)
                 {
                     AngleCannon = 360 - AngleCannon;
                 }
@@ -233,7 +226,7 @@ namespace game.GameObject
             else
             {
                 AngleCannon = Math.Acos(b / a) * (180 / MathConst.M_PI);
-                if (CursorPositionX < Position.X)
+                if (KeyIsPress.CursorPositionX < Position.X)
                 {
                     AngleCannon = 360 - AngleCannon;
                 }
@@ -241,6 +234,36 @@ namespace game.GameObject
 
             if (AngleCannon == 360) AngleCannon = 0;
             CannonSprite.Rotation = (float)AngleCannon;
+        }
+        protected override bool CheckKollision(GameObjectType Type)
+        {
+            if (Type == GameObjectType.EnemyBullet)
+            {
+                GetDamage();
+                return true;
+            }
+            if (Type == GameObjectType.HealBox)
+            {
+                if (HP <= 7)
+                {
+                    Heal();
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        protected void GetDamage()
+        {
+            HP -= 1;
+            if (HP == 0)
+            {
+                Kill();
+            }
+        }
+        private void Heal()
+        {
+            HP += 3;
         }
     }
 }

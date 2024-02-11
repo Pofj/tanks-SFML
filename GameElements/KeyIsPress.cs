@@ -13,5 +13,8 @@ namespace game.GameElements
         static public bool isAPressed = false;
         static public bool isDPressed = false;
         static public bool leftClick = false;
+        static public double CursorPositionX, CursorPositionY;
+        static public uint OldHeight, OldWidth;
+        static public uint CurrentHeigh, CurrentWidth;
     }
 }
