@@ -12,9 +12,9 @@ namespace game.GameObject
 {
     class EnemyTank : Tank
     {
-        public EnemyTank(Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.EnemyTank, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank_cannon.png") : base(GamePt,x, y, angle, ObjectType, imagePath, ImagePathCannon) { }
+        public EnemyTank(Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.Enemy, float SizeObject = 0.11f, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\enemy_tank_cannon.png") : base(GamePt,x, y, angle, ObjectType,SizeObject, imagePath, ImagePathCannon) { }
 
-        public override void Action(in List<game.GameObject.Box> AllObjects)
+        protected void NeedToFire(in List<game.GameObject.Box> AllObjects) 
         {
             Vector2f PosTank = AllObjects[0].getPosition();
             float r = (float)Math.Sqrt(Math.Pow(Position.X - PosTank.X, 2) +
@@ -73,14 +73,19 @@ namespace game.GameObject
                     Fire(AllObjects);
                 }
             }
-            return;
+        }
+        public override void Action(in List<game.GameObject.Box> AllObjects)
+        {
+            NeedToFire(AllObjects);
         }
         private void Fire(in List<game.GameObject.Box> AllObjects)
         {
+
             if ((GlobalTimer.ClockGL.ElapsedTime.AsSeconds() - TimeSinceLastShot) < 0.5) return;
             TimeSinceLastShot = GlobalTimer.ClockGL.ElapsedTime.AsSeconds();
-            Bullet temp_bullet = new Bullet(Position.X + 50 * (float)Math.Sin(Angle * MathConst.M_PI / 180.0),
-                Position.Y - 50 * (float)Math.Cos(Angle * MathConst.M_PI / 180.0), Angle, GameObjectType.EnemyBullet);
+            float x = Position.X + 47 * InfoAboutResolution.RatioWidthResolution * (float)Math.Sin(AngleCannon * MathConst.M_PI / 180.0); //50
+            float y = Position.Y - 47 * InfoAboutResolution.RatioWidthResolution * (float)Math.Cos(AngleCannon * MathConst.M_PI / 180.0);
+            Bullet temp_bullet = new Bullet(x, y, AngleCannon, GameObjectType.EnemyBullet, CannonSprite.Scale.X);
             temp_bullet.Dead += GamePt.DeleteDeadObject;
             AllObjects.Add(temp_bullet);
         }

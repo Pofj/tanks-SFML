@@ -13,30 +13,41 @@ using System.Threading.Tasks;
 namespace game.GameObject
 {
     class Tank : Box
+
     {
-        protected Game GamePt;
+        public delegate void TankHandler();
+        public event TankHandler TakeDamage;
+        public event TankHandler GetHeal;
+        public delegate void HandlerHUD(Vector2f ViewCenter);
+        public event HandlerHUD TankMove;
+        static protected Game GamePt;
         protected float TimeSinceLastShot = 0.11f;
-        private uint Speed = 4;
+        private float Speed = 4;
         protected double Angle;
-        private double AngleCannon;
+        protected double AngleCannon;
         protected uint HP = 10;
         private float SizeCannon = 0.14f;
-        private float SizeTank = 0.11f;
         protected Sprite CannonSprite;
         private Texture CannonTexture;
         private double a=1, b=1;
-        public Tank(in Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.Player, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\ally_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\tank_cannon.png") : base(x, y, ObjectType, imagePath)
+        public Tank(in Game GamePt,float x, float y, uint angle, GameObjectType ObjectType = GameObjectType.Player, float SizeObject = 0.11f, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\ally_tank.png", string ImagePathCannon = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\tank_cannon.png") : base(x, y, ObjectType,SizeObject, imagePath)
         {
-            this.GamePt = GamePt;
+            Tank.GamePt = GamePt;
             this.Angle = angle;
             AngleCannon = angle;
+            Speed = Speed * InfoAboutResolution.RatioWidthResolution;
+
+            float SizeCannonX = 0.14f * InfoAboutResolution.RatioWidthResolution;
+            float SizeCannonY = 0.14f * InfoAboutResolution.RatioWidthResolution;
+
+
             CannonTexture = new SFML.Graphics.Texture(ImagePathCannon);
             CannonSprite = new SFML.Graphics.Sprite(CannonTexture);
             CheckCorrectTankCreation();
+
             CannonSprite.Origin = new Vector2f(133, 399);
             CannonSprite.Position = this.Position;
-            CannonSprite.Scale = new SFML.System.Vector2f(SizeCannon, SizeCannon);
-            ObjectSprite.Scale = new SFML.System.Vector2f(SizeTank, SizeTank);
+            CannonSprite.Scale = new SFML.System.Vector2f(SizeCannonX, SizeCannonY);
             //this.ObjectSprite.Origin = new Vector2f(ObjectSprite.GetLocalBounds().Width / 2, ObjectSprite.GetLocalBounds().Height / 2);
         }
         protected void CheckCorrectTankCreation()
@@ -44,6 +55,13 @@ namespace game.GameObject
             if (ObjectTexture == null) Console.WriteLine("Error to load texture on class {0}", ObjectType);
             if (ObjectSprite == null) Console.WriteLine("Error to create sprite or on class {0}", ObjectType);
         }
+        //public override void ChangeSize()
+        //{
+        //    float SizeCannonX = SizeCannon * InfoAboutResolution.RatioWidthResolution;
+        //    float SizeCannonY = SizeCannon * InfoAboutResolution.RatioWidthResolution;
+        //    CannonSprite.Scale = new SFML.System.Vector2f(SizeCannonX, SizeCannonY);
+        //    base.ChangeSize();
+        //}
         public override void Show(in RenderWindow window)
         {
             if (isAlive())
@@ -67,8 +85,11 @@ namespace game.GameObject
         {
             if ((GlobalTimer.ClockGL.ElapsedTime.AsSeconds() - TimeSinceLastShot) < 0.5) return;
             TimeSinceLastShot = GlobalTimer.ClockGL.ElapsedTime.AsSeconds();
-            Bullet temp_bullet = new Bullet(Position.X + 50 * (float)Math.Sin(AngleCannon * MathConst.M_PI / 180.0),
-                Position.Y - 50 * (float)Math.Cos(AngleCannon *  MathConst.M_PI / 180.0),AngleCannon, GameObjectType.PlayerBullet);
+            //int k_x = (int)(88 * InfoAboutResolution.RatioWidthResolution);
+            //int k_y = (int)(88 * InfoAboutResolution.RatioHeightResolution);
+            float x = Position.X + 47 * InfoAboutResolution.RatioWidthResolution * (float)Math.Sin(AngleCannon * MathConst.M_PI / 180.0); //50
+            float y = Position.Y - 47 * InfoAboutResolution.RatioWidthResolution * (float)Math.Cos(AngleCannon * MathConst.M_PI / 180.0);
+            Bullet temp_bullet = new Bullet(x,y,AngleCannon, GameObjectType.PlayerBullet,CannonSprite.Scale.X);
             temp_bullet.Dead += GamePt.DeleteDeadObject;
             AllObjects.Add(temp_bullet);
         }
@@ -90,18 +111,32 @@ namespace game.GameObject
                 if (KeyIsPress.isWPressed)
                 {
 
-                    float x_1 = (float)(Position.X + Math.Sin(Angle * MathConst.M_PI / 180.0) * 33);
-                    float y_1 = (float)(Position.Y - Math.Cos(Angle * MathConst.M_PI / 180.0) * 33);
-                    float x_2 = (float)(Position.X + Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
-                    float y_2 = (float)(Position.Y - Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
+                    float x_1 = (float)(Position.X + Math.Sin(Angle * MathConst.M_PI / 180.0) * (29 * InfoAboutResolution.RatioWidthResolution)); // 29 33
+                    float y_1 = (float)(Position.Y - Math.Cos(Angle * MathConst.M_PI / 180.0) * (29 * InfoAboutResolution.RatioWidthResolution));
+                    float x_2 = (float)((Position.X + Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * (58 * InfoAboutResolution.RatioWidthResolution) / Math.Sqrt(2)) - 2.5); // 58 66
+                    float y_2 = (float)(Position.Y - Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * (58 * InfoAboutResolution.RatioWidthResolution) / Math.Sqrt(2));
 
-                    float x_3 = 2 * x_1 - x_2;
+                    float x_3 = (2 * x_1 - x_2);
                     float y_3 = 2 * y_1 - y_2;
 
                     Vector2f point = new Vector2f(x_1, y_1);
                     Vector2f point_2 = new Vector2f(x_2, y_2);
                     Vector2f point_3 = new Vector2f(x_3, y_3);
-
+                    SFML.Graphics.CircleShape circle = new SFML.Graphics.CircleShape();
+                    SFML.Graphics.CircleShape circle2 = new SFML.Graphics.CircleShape();
+                    SFML.Graphics.CircleShape circle3 = new SFML.Graphics.CircleShape();
+                    circle.Position = point;
+                    circle.Radius = 3;
+                    circle.FillColor = Color.Red;
+                    circle2.Position = point_2;
+                    circle2.Radius = 3;
+                    circle2.FillColor = Color.Red;
+                    circle3.Position = point_3;
+                    circle3.Radius = 3;
+                    circle3.FillColor = Color.Red;
+                    KeyIsPress.temp.Draw(circle);
+                    KeyIsPress.temp.Draw(circle2);
+                    KeyIsPress.temp.Draw(circle3);
                     foreach (var obj in AllObjects)
                     {
 
@@ -138,15 +173,17 @@ namespace game.GameObject
                     }
                     Position.X += (float)Math.Sin(Angle * MathConst.M_PI / 180.0) * Speed;
                     Position.Y -= (float)Math.Cos(Angle * MathConst.M_PI / 180.0) * Speed;
-                    ObjectSprite.Position = new Vector2f(Position.X, Position.Y);
-                    CannonSprite.Position = new Vector2f(Position.X, Position.Y);
+                    Vector2f Pos = new Vector2f(Position.X, Position.Y);
+                    ObjectSprite.Position = Pos;
+                    CannonSprite.Position = Pos;
+                    TankMove.Invoke(Pos);
                 }
                 if (KeyIsPress.isSPressed)
                 {
-                    float x_1 = (float)(Position.X - Math.Sin(Angle * MathConst.M_PI / 180.0) * 33);
-                    float y_1 = (float)(Position.Y + Math.Cos(Angle * MathConst.M_PI / 180.0) * 33);
-                    float x_2 = (float)(Position.X - Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
-                    float y_2 = (float)(Position.Y + Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * 66 / Math.Sqrt(2));
+                    float x_1 = (float)(Position.X - Math.Sin(Angle * MathConst.M_PI / 180.0) * 29 * InfoAboutResolution.RatioWidthResolution);
+                    float y_1 = (float)(Position.Y + Math.Cos(Angle * MathConst.M_PI / 180.0) * 29 * InfoAboutResolution.RatioWidthResolution);
+                    float x_2 = (float)(Position.X - Math.Cos((45 - Angle) * MathConst.M_PI / 180.0) * 58 * InfoAboutResolution.RatioWidthResolution / Math.Sqrt(2));
+                    float y_2 = (float)(Position.Y + Math.Sin((45 - Angle) * MathConst.M_PI / 180.0) * 58 * InfoAboutResolution.RatioWidthResolution / Math.Sqrt(2));
 
                     float x_3 = 2 * x_1 - x_2;
                     float y_3 = 2 * y_1 - y_2;
@@ -191,8 +228,10 @@ namespace game.GameObject
                     }
                     Position.X -= (float)Math.Sin(Angle * MathConst.M_PI / 180.0) * Speed;
                     Position.Y += (float)Math.Cos(Angle * MathConst.M_PI / 180.0) * Speed;
-                    ObjectSprite.Position = new Vector2f(Position.X, Position.Y);
-                    CannonSprite.Position = new Vector2f(Position.X, Position.Y);
+                    Vector2f Pos = new Vector2f(Position.X, Position.Y);
+                    ObjectSprite.Position = Pos;
+                    CannonSprite.Position = Pos;
+                    TankMove.Invoke(Pos); ;
                 }
             }
         }
@@ -211,14 +250,16 @@ namespace game.GameObject
             this.ObjectSprite.Rotation = (float)Angle;
         }
         private void CannonRotation()
-        {
-            a = Math.Sqrt(Math.Pow((KeyIsPress.CursorPositionX - Position.X), 2) + Math.Pow((KeyIsPress.CursorPositionY - Position.Y), 2)); if (a == 0) a = 0.0001;
-            b = Math.Abs(KeyIsPress.CursorPositionY - Position.Y);
+        { 
+            a = Math.Sqrt(Math.Pow((InfoAboutMouse.CursorPositionX - InfoAboutResolution.CurrentWidth/2), 2) + Math.Pow((InfoAboutMouse.CursorPositionY - InfoAboutResolution.CurrentHeight/2), 2)); if (a == 0) a = 0.0001;
+            b = Math.Abs(InfoAboutMouse.CursorPositionY - InfoAboutResolution.CurrentHeight/2);
+            //a = Math.Sqrt(Math.Pow((InfoAboutMouse.CursorPositionX - Position.X), 2) + Math.Pow((InfoAboutMouse.CursorPositionY - Position.Y), 2)); if (a == 0) a = 0.0001;
+            //b = Math.Abs(InfoAboutMouse.CursorPositionY - Position.Y);
 
-            if (KeyIsPress.CursorPositionY > Position.Y)
+            if (InfoAboutMouse.CursorPositionY > (InfoAboutResolution.CurrentHeight / 2))
             {
                 AngleCannon = 180 - Math.Acos(b / a) * (180 / MathConst.M_PI);
-                if (KeyIsPress.CursorPositionX < Position.X)
+                if (InfoAboutMouse.CursorPositionX < (InfoAboutResolution.CurrentWidth / 2))
                 {
                     AngleCannon = 360 - AngleCannon;
                 }
@@ -226,7 +267,7 @@ namespace game.GameObject
             else
             {
                 AngleCannon = Math.Acos(b / a) * (180 / MathConst.M_PI);
-                if (KeyIsPress.CursorPositionX < Position.X)
+                if (InfoAboutMouse.CursorPositionX < (InfoAboutResolution.CurrentWidth / 2))
                 {
                     AngleCannon = 360 - AngleCannon;
                 }
@@ -260,10 +301,12 @@ namespace game.GameObject
             {
                 Kill();
             }
+            TakeDamage?.Invoke();
         }
         private void Heal()
         {
             HP += 3;
+            GetHeal?.Invoke();
         }
     }
 }

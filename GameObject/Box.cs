@@ -1,4 +1,5 @@
 ﻿using game.GameElements;
+using game.Global;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -26,32 +27,35 @@ namespace game.GameObject
         protected SFML.System.Vector2f Position;
         protected SFML.Graphics.Texture ObjectTexture;
         protected SFML.Graphics.Sprite ObjectSprite;
-        protected float SizeObject = 0.8f;
-        protected Vector2f ResizeKoef;
+        protected float SizeObject;
 
         //objWithEvent* game;
-        public Box(float x, float y, GameObjectType ObjectType = GameObjectType.Box, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\default_box.png")
+        public Box(float x, float y, GameObjectType ObjectType = GameObjectType.Box,float SizeObject = 0.8f, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\default_box.png")
         {
-            ResizeKoef = new Vector2f(1,1);
+            this.SizeObject = SizeObject;
             this.ObjectType = ObjectType;
-            this.Position.X = x;
-            this.Position.Y = y;
+            this.Position.X = x * InfoAboutResolution.RatioWidthResolution;
+            this.Position.Y = y * InfoAboutResolution.RatioWidthResolution;
+            float SizeObjectX = SizeObject * InfoAboutResolution.RatioWidthResolution;
+            float SizeObjectY = SizeObject * InfoAboutResolution.RatioWidthResolution;
+
+            //InfoAboutResolution.RatioWidthResolution = (float)InfoAboutResolution.CurrentWidth / (float)InfoAboutResolution.OriginalWidth / (InfoAboutResolution.CurrentRatio > InfoAboutResolution.OriginalRatio ? (InfoAboutResolution.CurrentRatio / InfoAboutResolution.OriginalRatio) : 1);
+            //InfoAboutResolution.RatioHeightResolution = (float)InfoAboutResolution.CurrentHeight / (float)InfoAboutResolution.OriginalHeight / (InfoAboutResolution.CurrentRatio < InfoAboutResolution.OriginalRatio ? (InfoAboutResolution.CurrentRatio / InfoAboutResolution.OriginalRatio) : 1);
+
+
+
+
+
+            //float SizeObjectX = SizeObject * (float)InfoAboutResolution.CurrentWidth / (float)InfoAboutResolution.OriginalWidth;
+            //float SizeObjectY = SizeObject * (float)InfoAboutResolution.CurrentHeight / (float)InfoAboutResolution.OriginalHeight;
             ObjectTexture = new SFML.Graphics.Texture(imagePath);
             ObjectSprite = new SFML.Graphics.Sprite(ObjectTexture);
             CheckCorrectCreation();
-
+            
             this.ObjectSprite.Origin = new Vector2f(ObjectSprite.GetLocalBounds().Width / 2, ObjectSprite.GetLocalBounds().Height / 2);
             ObjectSprite.Position = this.Position;
-            ObjectSprite.Scale = new SFML.System.Vector2f(SizeObject, SizeObject);
+            ObjectSprite.Scale = new SFML.System.Vector2f(SizeObjectX, SizeObjectY);
             Kollision += CheckKollision;
-        }
-        public void SetResizeKoef(float k,float k2)
-        {
-            ResizeKoef = new Vector2f(k, k2);
-        }
-        public Vector2f GetResizeKoef()
-        {
-            return ResizeKoef;
         }
         protected void Kill()
         {
@@ -83,10 +87,17 @@ namespace game.GameObject
         {
             return Position;
         }
-        public void ChangeSize(float NewSize)
+        public virtual void ChangeSize()
         {
-            ObjectSprite.Scale = new SFML.System.Vector2f(NewSize, NewSize);
-            SizeObject = NewSize;
+            float SizeObjectX = SizeObject * InfoAboutResolution.RatioWidthResolution;
+            float SizeObjectY = SizeObject * InfoAboutResolution.RatioWidthResolution;
+            //ObjectSprite = new SFML.Graphics.Sprite(ObjectTexture);
+            //this.ObjectSprite.Origin = new Vector2f(ObjectSprite.GetLocalBounds().Width / 2, ObjectSprite.GetLocalBounds().Height / 2);
+            //ObjectSprite.Position = this.Position;
+            ObjectSprite.Scale = new SFML.System.Vector2f(SizeObjectX, SizeObjectY);
+            //Position.X = Position.X * ((float)InfoAboutResolution.PreviousWidth / InfoAboutResolution.CurrentWidth);
+            //Position.Y = Position.Y * ((float)InfoAboutResolution.PreviousHeight / InfoAboutResolution.CurrentHeight);
+            //ObjectSprite.Position = this.Position;
         }
         public virtual void Show(in RenderWindow window)
         {
@@ -102,7 +113,7 @@ namespace game.GameObject
         }
         public virtual void Action(in List<game.GameObject.Box> AllObjects)
         {
-
+            return;
         }
 
     }

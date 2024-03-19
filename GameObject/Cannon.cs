@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using game.GameElements;
 using game.Global;
-using SFML.Graphics;
 using SFML.System;
 
 namespace game.GameObject
 {
     class Cannon : Box
     {
+        public delegate void CannonHandler();
+        public event CannonHandler Dead;
         private Game GamePt;
         private uint HP = 3;
         private float Angle;
         private float TimeSinceLastShot = 1.0f;
-        public Cannon(Game GamePt,float x, float y, GameObjectType ObjectType = GameObjectType.EnemyCannon, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\cannon.png") : base(x, y, ObjectType, imagePath) 
+        public Cannon(Game GamePt,float x, float y, GameObjectType ObjectType = GameObjectType.Enemy, float SizeObject = 0.8f, string imagePath = "D:\\projects\\c# tank\\game\\Resources\\ObjectTexture\\cannon.png") : base(x, y, ObjectType, SizeObject, imagePath) 
         {
             this.GamePt = GamePt;
         }
@@ -25,8 +21,9 @@ namespace game.GameObject
         {
             if ((GlobalTimer.ClockGL.ElapsedTime.AsSeconds() - TimeSinceLastShot) < 0.5) return;
             TimeSinceLastShot = GlobalTimer.ClockGL.ElapsedTime.AsSeconds();
-            Bullet temp_bullet = new Bullet(Position.X + 50 * (float)Math.Sin(Angle * MathConst.M_PI / 180.0),
-                Position.Y - 50 * (float)Math.Cos(Angle * MathConst.M_PI / 180.0), Angle, GameObjectType.EnemyBullet);
+            float x = Position.X + 50 * (float)Math.Sin(Angle * MathConst.M_PI / 180.0);
+            float y = Position.Y - 50 * (float)Math.Cos(Angle * MathConst.M_PI / 180.0);
+            Bullet temp_bullet = new Bullet(x,y, Angle, GameObjectType.EnemyBullet,ObjectSprite.Scale.X * (float)0.175);
             temp_bullet.Dead += GamePt.DeleteDeadObject;
             AllObjects.Add(temp_bullet);
         }

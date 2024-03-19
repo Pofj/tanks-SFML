@@ -18,7 +18,7 @@ namespace MainProgram
     {
         static void Main(string[] args)
         {
-            GameWindow window = new GameWindow(800,600);
+            GameWindow window = new GameWindow(800, 600); // 960,540 1920,1080 1024,768 800,600 1360,1024
             window.OpenWindow();   
         }
     }
